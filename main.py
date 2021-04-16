@@ -53,6 +53,18 @@ plt.ylabel("pc2")
 plt.axis('equal')
 plt.show()
 
+df_new = pd.DataFrame(pca.get_covariance())
+print(df_new)
+plt.matshow(pca.components_, cmap='twilight')
+plt.colorbar()
+plt.gca().xaxis.tick_bottom()
+plt.xticks(range(len(df.columns)), df.iloc[:, :].columns,rotation=90)
+plt.yticks(range(len(df2.columns)), df2.iloc[:, :].columns)
+plt.title("Main features")
+i, k = plt.ylim()
+plt.ylim(i+0.5, k-0.5)
+plt.show()
+
 from scipy.cluster.hierarchy import dendrogram, ward
 linkage_array = ward(df2)
 plt.figure(figsize=(20, 10))
@@ -63,4 +75,9 @@ plt.show()
 
 import SimpSOM as sps
 
-net = sps.somNet(20, 20, df2, PBC=True)
+net = sps.somNet(20, 20, df2.values, PBC=True)
+net.train(0.01, 10000)
+net.save('filename_weights')
+# net.nodes_graph(colnum=0)
+# net.diff_graph()
+net.cluster(df2.values, type='qthresh')
